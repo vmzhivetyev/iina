@@ -168,8 +168,6 @@
 		512B8FDD2BC2376E00AF41BF /* OutlineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 512B8FDC2BC2376E00AF41BF /* OutlineView.swift */; };
 		513A4FFA29B53F8100A8EA7D /* Atomic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 513A4FF929B53F8100A8EA7D /* Atomic.swift */; };
 		515B5E5A2A579903001FCD49 /* iina-plugin in Copy Executables */ = {isa = PBXBuildFile; fileRef = E38558872A484A2D0083772D /* iina-plugin */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		518376DD2C23DD2300574F00 /* libgcc_s.1.1.dylib in Copy Dylibs */ = {isa = PBXBuildFile; fileRef = 518376D92C23DB1400574F00 /* libgcc_s.1.1.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		518376DE2C23DD2300574F00 /* libstdc++.6.dylib in Copy Dylibs */ = {isa = PBXBuildFile; fileRef = 518376DB2C23DB2F00574F00 /* libstdc++.6.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		51854CDA2A1C489300C40B78 /* FFmpegLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51854CD92A1C489300C40B78 /* FFmpegLogger.swift */; };
 		5196819A29EC963F00B05D55 /* CoreDisplay.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5196819929EC963F00B05D55 /* CoreDisplay.framework */; };
 		519872FF26879B9B00F84BCC /* AccessibilityPreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 519872FE26879B9B00F84BCC /* AccessibilityPreferences.swift */; };
@@ -454,8 +452,6 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				518376DD2C23DD2300574F00 /* libgcc_s.1.1.dylib in Copy Dylibs */,
-				518376DE2C23DD2300574F00 /* libstdc++.6.dylib in Copy Dylibs */,
 				34ACABB72C142A0C00F871A0 /* libarchive.13.dylib in Copy Dylibs */,
 				34ACABB82C142A0C00F871A0 /* libass.9.dylib in Copy Dylibs */,
 				34ACABB92C142A0C00F871A0 /* libavcodec.61.dylib in Copy Dylibs */,
@@ -2898,7 +2894,6 @@
 					};
 					84EB1ED51D2F51D3004FA5A1 = {
 						CreatedOnToolsVersion = 7.3.1;
-						DevelopmentTeam = 67CQ77V27R;
 						LastSwiftMigration = 1020;
 						ProvisioningStyle = Automatic;
 					};
@@ -4721,6 +4716,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 496498882919E47900CD61A5 /* iina.xcconfig */;
 			buildSettings = {
+				DEVELOPMENT_TEAM = "";
 				GCC_PREPROCESSOR_DEFINITIONS = "GL_SILENCE_DEPRECATION=1";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.video";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2017-2025\nCollider LI, et al.\nReleased under GPLv3.";
@@ -4730,6 +4726,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/deps/lib",
 				);
+				MACOSX_DEPLOYMENT_TARGET = 14.7;
 				SKIP_INSTALL = NO;
 			};
 			name = Nightly;
@@ -4760,6 +4757,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 496498882919E47900CD61A5 /* iina.xcconfig */;
 			buildSettings = {
+				DEVELOPMENT_TEAM = "";
 				GCC_PREPROCESSOR_DEFINITIONS = "GL_SILENCE_DEPRECATION=1";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.video";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2017-2025\nCollider LI, et al.\nReleased under GPLv3.";
@@ -4768,6 +4766,12 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/deps/lib",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 14.7;
+				"OTHER_LDFLAGS[arch=x86_64]" = (
+					"$(inherited)",
+					"-l",
+					gcc_s.1.1,
 				);
 				SKIP_INSTALL = NO;
 			};
@@ -4807,6 +4811,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 496498882919E47900CD61A5 /* iina.xcconfig */;
 			buildSettings = {
+				DEVELOPMENT_TEAM = "";
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"GL_SILENCE_DEPRECATION=1",
 					"$(inherited)",
@@ -4819,6 +4824,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/deps/lib",
 				);
+				MACOSX_DEPLOYMENT_TARGET = 14.7;
 				SKIP_INSTALL = NO;
 			};
 			name = Debug;
@@ -4827,6 +4833,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 496498882919E47900CD61A5 /* iina.xcconfig */;
 			buildSettings = {
+				DEVELOPMENT_TEAM = "";
 				GCC_PREPROCESSOR_DEFINITIONS = "GL_SILENCE_DEPRECATION=1";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.video";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2017-2025\nCollider LI, et al.\nReleased under GPLv3.";
@@ -4836,6 +4843,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/deps/lib",
 				);
+				MACOSX_DEPLOYMENT_TARGET = 14.7;
 				SKIP_INSTALL = NO;
 			};
 			name = Release;

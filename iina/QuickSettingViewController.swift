@@ -250,12 +250,16 @@ class QuickSettingViewController: NSViewController, NSTableViewDataSource, NSTab
       subtitleSwitch.controlSize = .small
       secondarySubtitleSwitch.controlSize = .small
 
-      speedSlider.neutralValue = 8
-      (audioEQSliders + videoEQSliders + [audioDelaySlider, subDelaySlider, subScaleSlider]).forEach {
-        $0.neutralValue = 0
-      }
-
-      subPosSlider.tintProminence = .none
+      // Commented out for compatibility with Xcode 16.2 SDK
+      // These APIs are only available in macOS 26+
+      // if #available(macOS 26, *) {
+      //   speedSlider.neutralValue = 8
+      //   (audioEQSliders + videoEQSliders + [audioDelaySlider, subDelaySlider, subScaleSlider]).forEach {
+      //     $0.neutralValue = 0
+      //   }
+      //
+      //   subPosSlider.tintProminence = .none
+      // }
     }
 
     // colors
