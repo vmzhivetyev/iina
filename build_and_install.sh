@@ -16,11 +16,11 @@ xcodebuild -project iina.xcodeproj \
     clean build
 
 # Find the built app
-BUILD_DIR="$HOME/Library/Developer/Xcode/DerivedData/iina-*/Build/Products/Release"
-APP_PATH=$(find "$BUILD_DIR" -name "IINA.app" -maxdepth 1 2>/dev/null | head -1)
+APP_PATH=$(echo "$HOME/Library/Developer/Xcode/DerivedData/iina-"*/Build/Products/Release/IINA.app | awk '{print $1}')
 
-if [ -z "$APP_PATH" ]; then
+if [ -z "$APP_PATH" ] || [ ! -d "$APP_PATH" ]; then
     echo "Error: Could not find built IINA.app"
+    echo "Searched in: $HOME/Library/Developer/Xcode/DerivedData/iina-*/Build/Products/Release/"
     exit 1
 fi
 
