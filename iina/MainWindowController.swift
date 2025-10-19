@@ -108,6 +108,14 @@ class MainWindowController: PlayerWindowController {
   /** The control view for interactive mode. */
   var cropSettingsView: CropBoxViewController?
 
+  /** Video re-encoding manager. */
+  lazy var reencodeManager: VideoReencodeManager = {
+    return VideoReencodeManager()
+  }()
+
+  /** Re-encoding settings window controller. */
+  var reencodeSettingsWindowController: ReencodeSettingsWindowController?
+
   private lazy var magnificationGestureRecognizer: NSMagnificationGestureRecognizer = {
     return NSMagnificationGestureRecognizer(target: self, action: #selector(MainWindowController.handleMagnifyGesture(recognizer:)))
   }()
@@ -3113,6 +3121,10 @@ class MainWindowController: PlayerWindowController {
       player.screenshot()
     case .plugins:
       showPluginSidebar(tab: nil)
+    case .setReencodeStart:
+      setReencodeStartPoint()
+    case .setReencodeEnd:
+      setReencodeEndPoint()
     }
   }
 
@@ -3125,6 +3137,100 @@ class MainWindowController: PlayerWindowController {
     } else {
       window?.collectionBehavior = [.managed, .fullScreenPrimary]
     }
+  }
+
+  // MARK: - Video Re-encoding
+
+  private func setReencodeStartPoint() {
+    guard let currentTime = player.info.videoPosition?.second,
+          let videoPath = player.info.currentURL?.path else {
+      player.sendOSD(.fileError)
+      return
+    }
+
+    reencodeManager.setStartPoint(time: currentTime, videoPath: videoPath)
+    player.sendOSD(.custom("Re-encode start point set: \(reencodeManager.formatTimeForDisplay(currentTime))"))
+  }
+
+  private func setReencodeEndPoint() {
+    guard let currentTime = player.info.videoPosition?.second else {
+      player.sendOSD(.fileError)
+      return
+    }
+
+    // Check if we have a start point
+    guard reencodeManager.startTime != nil else {
+      player.sendOSD(.custom("Please set start point first"))
+      return
+    }
+
+    reencodeManager.setEndPoint(time: currentTime)
+
+    // Validate range
+    guard reencodeManager.hasValidRange() else {
+      player.sendOSD(.custom("Invalid time range: end must be after start"))
+      reencodeManager.reset()
+      return
+    }
+
+    // Show settings window
+    showReencodeSettingsWindow()
+  }
+
+  private func showReencodeSettingsWindow() {
+    let settingsController = ReencodeSettingsWindowController(reencodeManager: reencodeManager)
+    self.reencodeSettingsWindowController = settingsController
+
+    settingsController.onEncode = { [weak self] settings in
+      self?.startReencoding(with: settings)
+    }
+
+    settingsController.onCancel = { [weak self] in
+      self?.reencodeManager.reset()
+    }
+
+    window?.beginSheet(settingsController.window!)
+  }
+
+  private func startReencoding(with settings: VideoReencodeManager.ReencodeSettings) {
+    player.sendOSD(.custom("Starting re-encoding..."))
+
+    reencodeManager.executeReencode(
+      settings: settings,
+      onProgress: { [weak self] progressOutput in
+        // Parse ffmpeg progress output and update OSD if needed
+        // For now, just log it
+        if progressOutput.contains("time=") {
+          Logger.log("FFmpeg progress: \(progressOutput)", level: .verbose)
+        }
+      },
+      onCompletion: { [weak self] success, message in
+        guard let self = self else { return }
+
+        if success {
+          if let outputPath = message {
+            self.player.sendOSD(.custom("Re-encoding completed!"))
+            Logger.log("Re-encoding completed: \(outputPath)", level: .verbose)
+
+            // Show notification with option to reveal in Finder
+            DispatchQueue.main.async {
+              let notification = NSUserNotification()
+              notification.title = "IINA Re-encoding Complete"
+              notification.informativeText = "Video saved to: \(URL(fileURLWithPath: outputPath).lastPathComponent)"
+              notification.soundName = NSUserNotificationDefaultSoundName
+              notification.userInfo = ["outputPath": outputPath]
+              NSUserNotificationCenter.default.deliver(notification)
+            }
+          }
+        } else {
+          let errorMessage = message ?? "Unknown error"
+          self.player.sendOSD(.custom("Re-encoding failed: \(errorMessage)"))
+          Logger.log("Re-encoding failed: \(errorMessage)", level: .error)
+        }
+
+        self.reencodeManager.reset()
+      }
+    )
   }
 
 }

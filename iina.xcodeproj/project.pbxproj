@@ -395,6 +395,8 @@
 		E3FC31461FE1501E00B9B86F /* PowerSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3FC31451FE1501E00B9B86F /* PowerSource.swift */; };
 		E3FEC1332A30400F00CFD845 /* PluginInputManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3FEC1322A30400F00CFD845 /* PluginInputManager.swift */; };
 		E3FF5AC02938582F0019CE45 /* JavascriptDevTool.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3FF5ABF2938582F0019CE45 /* JavascriptDevTool.swift */; };
+		E6A539BA2EA5792D00C06C29 /* ReencodeSettingsWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6A539B72EA5792D00C06C29 /* ReencodeSettingsWindowController.swift */; };
+		E6A539BB2EA5792D00C06C29 /* VideoReencodeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6A539B82EA5792D00C06C29 /* VideoReencodeManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -2001,6 +2003,8 @@
 		E5EF3D0A20FFBB6200FEBE4C /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/SubChooseViewController.strings; sourceTree = "<group>"; };
 		E5EF3D0C20FFBB9700FEBE4C /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/PreferenceWindowController.strings; sourceTree = "<group>"; };
 		E5EF3D0D2100878F00FEBE4C /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/PrefUtilsViewController.strings; sourceTree = "<group>"; };
+		E6A539B72EA5792D00C06C29 /* ReencodeSettingsWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReencodeSettingsWindowController.swift; sourceTree = "<group>"; };
+		E6A539B82EA5792D00C06C29 /* VideoReencodeManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoReencodeManager.swift; sourceTree = "<group>"; };
 		F4C61DFA1E20423A00A43BCC /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/PrefUIViewController.strings; sourceTree = "<group>"; };
 		FB0119E821F8C03D00477551 /* hi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hi; path = hi.lproj/MainMenu.strings; sourceTree = "<group>"; };
 		FB0119E921F8C03D00477551 /* hi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hi; path = hi.lproj/MainWindowController.strings; sourceTree = "<group>"; };
@@ -2188,6 +2192,8 @@
 		8452DD7F1D3A1F2A008A543A /* Preference */ = {
 			isa = PBXGroup;
 			children = (
+				E6A539B72EA5792D00C06C29 /* ReencodeSettingsWindowController.swift */,
+				E6A539B82EA5792D00C06C29 /* VideoReencodeManager.swift */,
 				8452DD841D3B956D008A543A /* Preference.swift */,
 				847C62C81DC13CDA00E1EF16 /* PrefGeneralViewController.swift */,
 				8400D5E01E1AB32A006785F5 /* PrefGeneralViewController.xib */,
@@ -3112,6 +3118,8 @@
 				84E745D61DFDD4FD00588DED /* KeyCodeHelper.swift in Sources */,
 				840D479B1DFEF649000D9A64 /* KeyRecordViewController.swift in Sources */,
 				D1A4D98A2B1495270009AB4E /* LegacyMigration.swift in Sources */,
+				E6A539BA2EA5792D00C06C29 /* ReencodeSettingsWindowController.swift in Sources */,
+				E6A539BB2EA5792D00C06C29 /* VideoReencodeManager.swift in Sources */,
 				E3965E1A2487C99900607EB4 /* JavascriptPluginSubtitle.swift in Sources */,
 				84F5D4951E44D5230060A838 /* KeyBindingCriterion.swift in Sources */,
 				846121BD1F35FCA500ABB39C /* DraggingDetect.swift in Sources */,

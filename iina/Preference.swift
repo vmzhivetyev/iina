@@ -725,6 +725,8 @@ struct Preference {
     case subTrack
     case screenshot
     case plugins
+    case setReencodeStart
+    case setReencodeEnd
 
     func image() -> NSImage {
       func makeSymbol(_ names: [String], _ fallbackImage: NSImage.Name) -> NSImage {
@@ -741,6 +743,8 @@ struct Preference {
       case .subTrack: return makeSymbol(["captions.bubble.fill"], "sub-track")
       case .screenshot: return makeSymbol(["camera.shutter.button"], "screenshot")
       case .plugins: return makeSymbol(["puzzlepiece.extension"], "plugin")
+      case .setReencodeStart: return makeSymbol(["scissors.badge.ellipsis", "scissors"], "screenshot")
+      case .setReencodeEnd: return makeSymbol(["scissors.circle", "scissors"], "screenshot")
       }
     }
 
@@ -755,6 +759,8 @@ struct Preference {
       case .subTrack: key = "sub_track"
       case .screenshot: key = "screenshot"
       case .plugins: key = "plugins"
+      case .setReencodeStart: key = "set_reencode_start"
+      case .setReencodeEnd: key = "set_reencode_end"
       }
       return NSLocalizedString("osc_toolbar.\(key)", comment: key)
     }
