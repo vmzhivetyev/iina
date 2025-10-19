@@ -4716,6 +4716,8 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 51537C7229FA26DD00F9A472 /* Nightly.xcconfig */;
 			buildSettings = {
+				ARCHS = arm64;
+				MACOSX_DEPLOYMENT_TARGET = 14.7;
 				SKIP_INSTALL = YES;
 			};
 			name = Nightly;
@@ -4734,7 +4736,6 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/deps/lib",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 14.7;
 				SKIP_INSTALL = NO;
 			};
 			name = Nightly;
@@ -4757,6 +4758,8 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 51A0F0F629FA2C8E000130CF /* Beta.xcconfig */;
 			buildSettings = {
+				ARCHS = arm64;
+				MACOSX_DEPLOYMENT_TARGET = 14.7;
 				SKIP_INSTALL = YES;
 			};
 			name = Beta;
@@ -4774,12 +4777,6 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/deps/lib",
-				);
-				MACOSX_DEPLOYMENT_TARGET = 14.7;
-				"OTHER_LDFLAGS[arch=x86_64]" = (
-					"$(inherited)",
-					"-l",
-					gcc_s.1.1,
 				);
 				SKIP_INSTALL = NO;
 			};
@@ -4803,6 +4800,8 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 4964988C2919E47900CD61A5 /* Debug.xcconfig */;
 			buildSettings = {
+				ARCHS = arm64;
+				MACOSX_DEPLOYMENT_TARGET = 14.7;
 				SKIP_INSTALL = YES;
 			};
 			name = Debug;
@@ -4811,6 +4810,8 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 4964988D2919E47900CD61A5 /* Release.xcconfig */;
 			buildSettings = {
+				ARCHS = arm64;
+				MACOSX_DEPLOYMENT_TARGET = 14.7;
 				SKIP_INSTALL = YES;
 			};
 			name = Release;
@@ -4832,7 +4833,6 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/deps/lib",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 14.7;
 				SKIP_INSTALL = NO;
 			};
 			name = Debug;
@@ -4851,7 +4851,6 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/deps/lib",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 14.7;
 				SKIP_INSTALL = NO;
 			};
 			name = Release;
@@ -4908,7 +4907,6 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -4966,7 +4964,6 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -5023,7 +5020,6 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -5080,7 +5076,6 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
