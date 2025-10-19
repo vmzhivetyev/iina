@@ -288,6 +288,35 @@ class ReencodeSettingsWindowController: NSWindowController {
     startTimeLabel.stringValue = "Start: \(reencodeManager.formatTimeForDisplay(start))"
     endTimeLabel.stringValue = "End: \(reencodeManager.formatTimeForDisplay(end))"
     durationLabel.stringValue = "Duration: \(reencodeManager.formatTimeForDisplay(duration))"
+
+    // Load persisted settings
+    let quality = Preference.integer(for: .reencodeQuality)
+    qualitySlider.doubleValue = Double(quality)
+    qualityTextField.stringValue = "\(quality)"
+    settings.quality = quality
+
+    let fps = Preference.double(for: .reencodeFPS)
+    if fps > 0 {
+      fpsTextField.stringValue = "\(fps)"
+      settings.fps = fps
+    }
+
+    let volume = Preference.double(for: .reencodeVolume)
+    if volume > 0 {
+      volumeTextField.stringValue = "\(volume)"
+      settings.volume = volume
+    }
+
+    let silentAudio = Preference.bool(for: .reencodeSilentAudio)
+    silentCheckbox.state = silentAudio ? .on : .off
+    volumeTextField.isEnabled = !silentAudio
+    settings.silentAudio = silentAudio
+
+    let codec = Preference.string(for: .reencodeCodec) ?? "hevc_videotoolbox"
+    if let index = codecPopup.itemTitles.firstIndex(of: codec) {
+      codecPopup.selectItem(at: index)
+    }
+    settings.codec = codec
   }
 
   // MARK: - Actions
@@ -296,12 +325,14 @@ class ReencodeSettingsWindowController: NSWindowController {
     let value = Int(sender.doubleValue)
     qualityTextField.stringValue = "\(value)"
     settings.quality = value
+    Preference.set(value, for: .reencodeQuality)
   }
 
   @objc private func silentCheckboxChanged(_ sender: NSButton) {
     let isChecked = sender.state == .on
     volumeTextField.isEnabled = !isChecked
     settings.silentAudio = isChecked
+    Preference.set(isChecked, for: .reencodeSilentAudio)
   }
 
   @objc private func browseOutputPath(_ sender: NSButton) {
@@ -325,29 +356,34 @@ class ReencodeSettingsWindowController: NSWindowController {
     if !fpsTextField.stringValue.isEmpty {
       if let fps = Double(fpsTextField.stringValue), fps > 0 {
         settings.fps = fps
+        Preference.set(fps, for: .reencodeFPS)
       } else {
         showAlert("Invalid FPS value. Please enter a positive number or leave it empty.")
         return
       }
     } else {
       settings.fps = nil
+      Preference.set(0.0, for: .reencodeFPS)
     }
 
     // Parse volume
     if !volumeTextField.stringValue.isEmpty && !settings.silentAudio {
       if let volume = Double(volumeTextField.stringValue), volume > 0 {
         settings.volume = volume
+        Preference.set(volume, for: .reencodeVolume)
       } else {
         showAlert("Invalid volume value. Please enter a positive number or leave it empty.")
         return
       }
     } else {
       settings.volume = nil
+      Preference.set(0.0, for: .reencodeVolume)
     }
 
     // Get codec
     if let selectedCodec = codecPopup.selectedItem?.title {
       settings.codec = selectedCodec
+      Preference.set(selectedCodec, for: .reencodeCodec)
     }
 
     // Get output path
@@ -385,6 +421,7 @@ extension ReencodeSettingsWindowController: NSTextFieldDelegate {
       if let value = Int(textField.stringValue), value >= 0, value <= 100 {
         qualitySlider.doubleValue = Double(value)
         settings.quality = value
+        Preference.set(value, for: .reencodeQuality)
       }
     }
   }

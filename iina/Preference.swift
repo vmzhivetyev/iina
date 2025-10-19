@@ -345,6 +345,13 @@ struct Preference {
 
     /// Workaround for AppKit defect where showWindow moves the window to a different screen (fixed as of macOS Tahoe).
     static let enableWrongScreenWorkaround = Key("enableWrongScreenWorkaround")
+
+    // Re-encode settings
+    static let reencodeQuality = Key("reencodeQuality")
+    static let reencodeFPS = Key("reencodeFPS")
+    static let reencodeVolume = Key("reencodeVolume")
+    static let reencodeSilentAudio = Key("reencodeSilentAudio")
+    static let reencodeCodec = Key("reencodeCodec")
   }
 
   // MARK: - Enums
@@ -998,7 +1005,13 @@ struct Preference {
     .enableHdrWorkaround: false,
     .enableNowPlayingArtwork: true,
     .enableDisplayIdle: true,
-    .enableWrongScreenWorkaround: true
+    .enableWrongScreenWorkaround: true,
+
+    .reencodeQuality: 60,
+    .reencodeFPS: 0.0,  // 0 means not set
+    .reencodeVolume: 0.0,  // 0 means not set
+    .reencodeSilentAudio: false,
+    .reencodeCodec: "hevc_videotoolbox"
   ]
 
 
