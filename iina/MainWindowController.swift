@@ -528,7 +528,7 @@ class MainWindowController: PlayerWindowController {
     pip.delegate = self
     return pip
   }()
-  
+
   var pip: PIPViewController {
     _pip
   }
@@ -635,7 +635,7 @@ class MainWindowController: PlayerWindowController {
     timePreviewWhenSeek.isHidden = true
     bottomView.isHidden = true
     pipOverlayView.isHidden = true
-    
+
     if player.disableUI { hideUI() }
 
     // add user default observers
@@ -816,7 +816,7 @@ class MainWindowController: PlayerWindowController {
       oscFloatingTopView.addView(fragVolumeView, in: .leading)
       oscFloatingTopView.addView(fragToolbarView, in: .trailing)
       oscFloatingTopView.addView(fragControlView, in: .center)
-      
+
       // Setting the visibility priority to detach only will cause freeze when resizing the window
       // (and triggering the detach) in macOS 11.
       if !isMacOS11 {
@@ -892,7 +892,7 @@ class MainWindowController: PlayerWindowController {
         return
       }
     }
-    
+
     super.keyDown(with: event)
   }
 
@@ -1308,7 +1308,7 @@ class MainWindowController: PlayerWindowController {
     cv.trackingAreas.forEach(cv.removeTrackingArea)
     playSlider.trackingAreas.forEach(playSlider.removeTrackingArea)
     UserDefaults.standard.set(NSStringFromRect(window!.frame), forKey: "MainWindowLastPosition")
-    
+
     player.events.emit(.windowWillClose)
   }
 
@@ -1417,7 +1417,7 @@ class MainWindowController: PlayerWindowController {
     if pipStatus == .inPIP {
       exitPIP()
     }
-    
+
     updateAdditionalInfo()
     player.events.emit(.windowFullscreenChanged, data: true)
   }
@@ -1546,7 +1546,7 @@ class MainWindowController: PlayerWindowController {
     } else {
       window.styleMask.remove(.fullScreen)
     }
- 
+
     restoreDockSettings()
     // restore window frame and aspect ratio
     let videoSize = player.videoSizeForDisplay
@@ -1634,7 +1634,7 @@ class MainWindowController: PlayerWindowController {
 
   func windowDidResize(_ notification: Notification) {
     guard let window = window else { return }
-    
+
     if case .animating(_, _, _) = fsState, player.info.state == .paused {
       forceDraw("Window entered full screen animation while paused")
     }
@@ -1682,13 +1682,13 @@ class MainWindowController: PlayerWindowController {
       controlBarFloating.xConstraint.constant = xPos
       controlBarFloating.yConstraint.constant = yPos
     }
-    
+
     // Detach the views in oscFloatingTopView manually on macOS 11 only; as it will cause freeze
     if isMacOS11 && oscPosition == .floating {
       guard let maxWidth = [fragVolumeView, fragToolbarView].compactMap({ $0?.frame.width }).max() else {
         return
       }
-      
+
       // window - 10 - controlBarFloating
       // controlBarFloating - 12 - oscFloatingTopView
       let margin: CGFloat = (10 + 12) * 2
@@ -1696,7 +1696,7 @@ class MainWindowController: PlayerWindowController {
                     - fragControlView.frame.width
                     - maxWidth*2
                     - margin) < 0
-      
+
       let views = oscFloatingTopView.views
       if hide {
         if views.contains(fragVolumeView)
@@ -1735,7 +1735,7 @@ class MainWindowController: PlayerWindowController {
       videoView.videoLayer.contentsScale = window!.backingScaleFactor
     }
   }
-  
+
   override func windowDidChangeScreen(_ notification: Notification) {
     super.windowDidChangeScreen(notification)
 
@@ -1948,7 +1948,7 @@ class MainWindowController: PlayerWindowController {
 
   private func setOSDViews(fromMessage message: OSDMessage) {
     osdLastMessage = message
-    
+
     let (osdString, osdType) = message.message()
     osdLabel.stringValue = osdString
 
@@ -3169,7 +3169,7 @@ class MainWindowController: PlayerWindowController {
     // Validate range
     guard reencodeManager.hasValidRange() else {
       player.sendOSD(.custom("Invalid time range: end must be after start"))
-      reencodeManager.reset()
+      // reencodeManager.reset()
       return
     }
 
@@ -3186,7 +3186,7 @@ class MainWindowController: PlayerWindowController {
     }
 
     settingsController.onCancel = { [weak self] in
-      self?.reencodeManager.reset()
+      self?.reencodeManager.resetEnd()
     }
 
     window?.beginSheet(settingsController.window!)
@@ -3227,8 +3227,6 @@ class MainWindowController: PlayerWindowController {
           self.player.sendOSD(.custom("Re-encoding failed: \(errorMessage)"))
           Logger.log("Re-encoding failed: \(errorMessage)", level: .error)
         }
-
-        self.reencodeManager.reset()
       }
     )
   }

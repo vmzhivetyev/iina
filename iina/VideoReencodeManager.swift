@@ -43,6 +43,10 @@ class VideoReencodeManager {
     Logger.log("Re-encode end point set to: \(formatTime(time))", level: .verbose)
   }
 
+  func resetEnd() {
+    endTime = nil
+  }
+
   func reset() {
     startTime = nil
     endTime = nil
