@@ -13,7 +13,8 @@ class ReencodeSettingsWindowController: NSWindowController {
 
   private var qualityTextField: NSTextField!
   private var qualitySlider: NSSlider!
-  private var fpsTextField: NSTextField!
+  private var speedSlider: NSSlider!
+  private var speedTextField: NSTextField!
   private var volumeTextField: NSTextField!
   private var silentCheckbox: NSButton!
   private var startTimeLabel: NSTextField!
@@ -78,9 +79,9 @@ class ReencodeSettingsWindowController: NSWindowController {
     let qualityStack = createQualitySection()
     mainStack.addArrangedSubview(qualityStack)
 
-    // FPS section
-    let fpsStack = createFPSSection()
-    mainStack.addArrangedSubview(fpsStack)
+    // Speed section
+    let speedStack = createSpeedSection()
+    mainStack.addArrangedSubview(speedStack)
 
     // Volume section
     let volumeStack = createVolumeSection()
@@ -160,21 +161,46 @@ class ReencodeSettingsWindowController: NSWindowController {
     return stack
   }
 
-  private func createFPSSection() -> NSView {
+  private func createSpeedSection() -> NSView {
     let stack = NSStackView()
     stack.orientation = .horizontal
     stack.spacing = 8
 
-    let label = NSTextField(labelWithString: "Speed (FPS):")
+    let label = NSTextField(labelWithString: "Speed:")
     label.alignment = .right
     label.widthAnchor.constraint(equalToConstant: 120).isActive = true
 
-    fpsTextField = NSTextField(string: "")
-    fpsTextField.placeholderString = "Optional (e.g., 24 for slow motion)"
-    fpsTextField.widthAnchor.constraint(greaterThanOrEqualToConstant: 250).isActive = true
+    // Speed slider: 0.25x to 4x (logarithmic would be better, but linear is simpler)
+    speedSlider = NSSlider(value: 1.0, minValue: 0.25, maxValue: 4.0, target: self, action: #selector(speedSliderChanged))
+    speedSlider.widthAnchor.constraint(greaterThanOrEqualToConstant: 200).isActive = true
+
+    speedTextField = NSTextField(string: "1.0")
+    speedTextField.placeholderString = "1.0"
+    speedTextField.widthAnchor.constraint(equalToConstant: 50).isActive = true
+    speedTextField.delegate = self
+
+    let infoLabel = NSTextField(labelWithString: "x")
+    infoLabel.alignment = .left
+
+    let descLabel = NSTextField(labelWithString: "(0.25x = 4× slower, 4x = 4× faster)")
+    descLabel.font = .systemFont(ofSize: 10)
+    descLabel.textColor = .secondaryLabelColor
+
+    let textStack = NSStackView()
+    textStack.orientation = .horizontal
+    textStack.spacing = 2
+    textStack.addArrangedSubview(speedTextField)
+    textStack.addArrangedSubview(infoLabel)
+
+    let controlStack = NSStackView()
+    controlStack.orientation = .vertical
+    controlStack.spacing = 4
+    controlStack.addArrangedSubview(textStack)
+    controlStack.addArrangedSubview(descLabel)
 
     stack.addArrangedSubview(label)
-    stack.addArrangedSubview(fpsTextField)
+    stack.addArrangedSubview(speedSlider)
+    stack.addArrangedSubview(controlStack)
 
     return stack
   }
@@ -295,10 +321,15 @@ class ReencodeSettingsWindowController: NSWindowController {
     qualityTextField.stringValue = "\(quality)"
     settings.quality = quality
 
-    let fps = Preference.double(for: .reencodeFPS)
-    if fps > 0 {
-      fpsTextField.stringValue = "\(fps)"
-      settings.fps = fps
+    let speed = Preference.double(for: .reencodeSpeed)
+    if speed > 0 {
+      speedSlider.doubleValue = speed
+      speedTextField.stringValue = String(format: "%.2f", speed)
+      settings.speedMultiplier = speed
+    } else {
+      // Default to 1.0 (normal speed)
+      speedSlider.doubleValue = 1.0
+      speedTextField.stringValue = "1.0"
     }
 
     let volume = Preference.double(for: .reencodeVolume)
@@ -328,6 +359,13 @@ class ReencodeSettingsWindowController: NSWindowController {
     Preference.set(value, for: .reencodeQuality)
   }
 
+  @objc private func speedSliderChanged(_ sender: NSSlider) {
+    let value = sender.doubleValue
+    speedTextField.stringValue = String(format: "%.2f", value)
+    settings.speedMultiplier = value
+    Preference.set(value, for: .reencodeSpeed)
+  }
+
   @objc private func silentCheckboxChanged(_ sender: NSButton) {
     let isChecked = sender.state == .on
     volumeTextField.isEnabled = !isChecked
@@ -352,18 +390,18 @@ class ReencodeSettingsWindowController: NSWindowController {
     // Validate and collect settings
     settings.quality = Int(qualitySlider.doubleValue)
 
-    // Parse FPS
-    if !fpsTextField.stringValue.isEmpty {
-      if let fps = Double(fpsTextField.stringValue), fps > 0 {
-        settings.fps = fps
-        Preference.set(fps, for: .reencodeFPS)
+    // Parse speed multiplier
+    if !speedTextField.stringValue.isEmpty {
+      if let speed = Double(speedTextField.stringValue), speed > 0 {
+        settings.speedMultiplier = speed
+        Preference.set(speed, for: .reencodeSpeed)
       } else {
-        showAlert("Invalid FPS value. Please enter a positive number or leave it empty.")
+        showAlert("Invalid speed value. Please enter a positive number (e.g., 0.5 for slower, 2.0 for faster).")
         return
       }
     } else {
-      settings.fps = nil
-      Preference.set(0.0, for: .reencodeFPS)
+      settings.speedMultiplier = nil
+      Preference.set(0.0, for: .reencodeSpeed)
     }
 
     // Parse volume
@@ -417,11 +455,19 @@ class ReencodeSettingsWindowController: NSWindowController {
 
 extension ReencodeSettingsWindowController: NSTextFieldDelegate {
   func controlTextDidChange(_ obj: Notification) {
-    if let textField = obj.object as? NSTextField, textField == qualityTextField {
-      if let value = Int(textField.stringValue), value >= 0, value <= 100 {
-        qualitySlider.doubleValue = Double(value)
-        settings.quality = value
-        Preference.set(value, for: .reencodeQuality)
+    if let textField = obj.object as? NSTextField {
+      if textField == qualityTextField {
+        if let value = Int(textField.stringValue), value >= 0, value <= 100 {
+          qualitySlider.doubleValue = Double(value)
+          settings.quality = value
+          Preference.set(value, for: .reencodeQuality)
+        }
+      } else if textField == speedTextField {
+        if let value = Double(textField.stringValue), value > 0, value <= 10.0 {
+          speedSlider.doubleValue = min(value, 4.0) // Slider max is 4.0, but allow higher values in text field
+          settings.speedMultiplier = value
+          Preference.set(value, for: .reencodeSpeed)
+        }
       }
     }
   }

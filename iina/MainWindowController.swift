@@ -3148,7 +3148,10 @@ class MainWindowController: PlayerWindowController {
       return
     }
 
-    reencodeManager.setStartPoint(time: currentTime, videoPath: videoPath)
+    // Get original video FPS from MPV
+    let originalFPS = player.mpv.getDouble(MPVProperty.currentTracksVideoDemuxFps)
+
+    reencodeManager.setStartPoint(time: currentTime, videoPath: videoPath, originalFPS: originalFPS > 0 ? originalFPS : nil)
     player.sendOSD(.custom("Re-encode start point set: \(reencodeManager.formatTimeForDisplay(currentTime))"))
   }
 

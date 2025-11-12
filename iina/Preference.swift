@@ -348,7 +348,8 @@ struct Preference {
 
     // Re-encode settings
     static let reencodeQuality = Key("reencodeQuality")
-    static let reencodeFPS = Key("reencodeFPS")
+    static let reencodeFPS = Key("reencodeFPS")  // Deprecated, kept for backward compatibility
+    static let reencodeSpeed = Key("reencodeSpeed")  // New: speed multiplier
     static let reencodeVolume = Key("reencodeVolume")
     static let reencodeSilentAudio = Key("reencodeSilentAudio")
     static let reencodeCodec = Key("reencodeCodec")
@@ -1008,7 +1009,8 @@ struct Preference {
     .enableWrongScreenWorkaround: true,
 
     .reencodeQuality: 60,
-    .reencodeFPS: 0.0,  // 0 means not set
+    .reencodeFPS: 0.0,  // 0 means not set (deprecated)
+    .reencodeSpeed: 1.0,  // 1.0 = normal speed
     .reencodeVolume: 0.0,  // 0 means not set
     .reencodeSilentAudio: false,
     .reencodeCodec: "hevc_videotoolbox"

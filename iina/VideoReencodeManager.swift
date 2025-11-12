@@ -14,6 +14,7 @@ class VideoReencodeManager {
   var startTime: Double?
   var endTime: Double?
   var inputVideoPath: String?
+  var originalVideoFPS: Double?
 
   private var ffmpegProcess: Process?
   private var progressHandler: ((String) -> Void)?
@@ -23,7 +24,7 @@ class VideoReencodeManager {
 
   struct ReencodeSettings {
     var quality: Int = 60
-    var fps: Double?
+    var speedMultiplier: Double?  // Speed multiplier (e.g., 0.5 for 2x slower, 2.0 for 2x faster)
     var volume: Double?
     var silentAudio: Bool = false
     var codec: String = "hevc_videotoolbox"
@@ -32,10 +33,11 @@ class VideoReencodeManager {
 
   // MARK: - Public Methods
 
-  func setStartPoint(time: Double, videoPath: String) {
+  func setStartPoint(time: Double, videoPath: String, originalFPS: Double? = nil) {
     self.startTime = time
     self.inputVideoPath = videoPath
-    Logger.log("Re-encode start point set to: \(formatTime(time))", level: .verbose)
+    self.originalVideoFPS = originalFPS
+    Logger.log("Re-encode start point set to: \(formatTime(time)), original FPS: \(originalFPS ?? 0)", level: .verbose)
   }
 
   func setEndPoint(time: Double) {
@@ -92,17 +94,48 @@ class VideoReencodeManager {
     var videoFilters: [String] = []
     var audioFilters: [String] = []
 
-    // Video filters (fps adjustment for slow motion)
-    if let fps = settings.fps {
-      videoFilters.append("setpts=PTS*(30/\(fps))")
+    // Video filters (speed adjustment)
+    if let speedMultiplier = settings.speedMultiplier, speedMultiplier > 0 {
+      // Adjust playback speed using setpts
+      // speedMultiplier < 1.0 = slower (e.g., 0.5 = half speed)
+      // speedMultiplier > 1.0 = faster (e.g., 2.0 = double speed)
+      videoFilters.append("setpts=PTS/\(speedMultiplier)")
+
+      // Calculate target FPS and cap at original FPS
+      if let originalFPS = originalVideoFPS {
+        let targetFPS = min(originalFPS, originalFPS * speedMultiplier)
+        videoFilters.append("fps=\(targetFPS)")
+      }
     }
 
-    // Audio filters (volume adjustment)
-    if let volume = settings.volume, !settings.silentAudio {
-      // Convert perceptual volume to dB
-      // Formula: dB = 20 * log10(volume)
-      let volumeDB = 20 * log10(volume)
-      audioFilters.append("volume=\(String(format: "%.2f", volumeDB))dB")
+    // Audio filters
+    if !settings.silentAudio {
+      // Speed adjustment for audio
+      if let speedMultiplier = settings.speedMultiplier, speedMultiplier > 0, speedMultiplier != 1.0 {
+        // atempo filter has limitations: must be between 0.5 and 100
+        // For values outside this range, we need to chain multiple atempo filters
+        var remainingSpeed = speedMultiplier
+        while remainingSpeed != 1.0 {
+          if remainingSpeed >= 0.5 && remainingSpeed <= 2.0 {
+            audioFilters.append("atempo=\(remainingSpeed)")
+            break
+          } else if remainingSpeed < 0.5 {
+            audioFilters.append("atempo=0.5")
+            remainingSpeed /= 0.5
+          } else {
+            audioFilters.append("atempo=2.0")
+            remainingSpeed /= 2.0
+          }
+        }
+      }
+
+      // Volume adjustment
+      if let volume = settings.volume {
+        // Convert perceptual volume to dB
+        // Formula: dB = 20 * log10(volume)
+        let volumeDB = 20 * log10(volume)
+        audioFilters.append("volume=\(String(format: "%.2f", volumeDB))dB")
+      }
     }
 
     // Handle silent audio
@@ -319,10 +352,10 @@ class VideoReencodeManager {
     // Add quality
     suffix += "_q\(settings.quality)"
 
-    // Add fps if specified
-    if let fps = settings.fps {
-      let fpsStr = String(format: "%.0f", fps)
-      suffix += "_\(fpsStr)fps"
+    // Add speed multiplier if specified
+    if let speed = settings.speedMultiplier, speed != 1.0 {
+      let speedStr = String(format: "%.2f", speed).replacingOccurrences(of: ".", with: "_")
+      suffix += "_\(speedStr)x"
     }
 
     // Add volume if specified
